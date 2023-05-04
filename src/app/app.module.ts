@@ -5,13 +5,15 @@ import { AppComponent } from './app.component';
 import {SidebarComponent} from "../Moduls/side-bare";
 import {AppbarComponent} from "../Moduls/appbar";
 import {ChatPageComponent} from "../Moduls/chatpage";
+import {AppMenuComponent} from "../Moduls/menu";
 
 @NgModule({
   declarations: [
     AppComponent,
     SidebarComponent,
     AppbarComponent,
-    ChatPageComponent
+    ChatPageComponent,
+    AppMenuComponent
   ],
   imports: [
     BrowserModule
