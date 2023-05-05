@@ -4,19 +4,23 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import {SidebarComponent} from "../Moduls/side-bare";
 import {AppbarComponent} from "../Moduls/appbar";
-import {ChatPageComponent} from "../Moduls/chatpage";
+import {ChatWindowComponent} from "../Moduls/chatpage";
 import {AppMenuComponent} from "../Moduls/menu";
+import {ChatInputComponent} from "../Moduls/ChatInput";
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
     AppComponent,
     SidebarComponent,
     AppbarComponent,
-    ChatPageComponent,
-    AppMenuComponent
+    ChatWindowComponent,
+    AppMenuComponent,
+    ChatInputComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

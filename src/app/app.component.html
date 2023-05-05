@@ -1,5 +1,19 @@
-<div class="flex">
-  <app-menu class="h-screen bg-gray-700"></app-menu>
+<!--<div class="flex h-screen">
+  <app-menu class="bg-gray-700"></app-menu>
   <app-sidebar class="hidden sm:block"></app-sidebar>
-  <app-appbar class="w-screen"></app-appbar>
+  <div class="flex-1">
+    <app-chat-window class="w-3/4 h-screen"></app-chat-window>
+    <app-chat-input class="w-1/4"></app-chat-input>
+  </div>
+</div>-->
+
+<div class="flex flex-col h-screen">
+  <div class="flex flex-1">
+    <app-menu class="bg-gray-700"></app-menu>
+    <app-sidebar class="hidden sm:block"></app-sidebar>
+    <div class="flex-1 flex flex-col">
+      <app-chat-window class="flex-1"></app-chat-window>
+      <app-chat-input></app-chat-input>
+    </div>
+  </div>
 </div>
