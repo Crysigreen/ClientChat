@@ -7,8 +7,8 @@ import {Component} from "@angular/core";
       <div class="bg-white border-b border-gray-300 h-16 px-5 py-5 flex justify-between items-center">
         <div class="font-bold text-gray-600">{{ chatPartner }}</div>
         <div>
-          <button class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-full mr-2"><img src="/assets/CallIcon.svg" class="w-6 h-6"></button>
-          <button class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-full"><img src="/assets/CallIcon.svg" class="w-6 h-6"></button>
+          <button class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-full mr-2"><img src="../assets/CallIcon.svg" alt="video call" class="w-6 h-6"></button>
+          <button class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-full"><img src="../assets/CallIcon.svg" alt="call" class="w-6 h-6"></button>
         </div>
       </div>
       <div class="flex-1 overflow-y-scroll px-4 py-2">
