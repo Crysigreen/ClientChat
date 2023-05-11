@@ -1,31 +1,36 @@
-<div class="flex justify-center items-center h-screen bg-cyan-950">
-  <div class="w-full max-w-sm border border-opacity-20 border-gray-300 rounded-2xl p-6 back">
+<div class="flex justify-center items-center h-screen bg-cover bg-center" style="background-image:url('../../../assets/wallpaper.jpg')">
+  <div class="w-full max-w-sm border border-opacity-20 backdrop-blur-sm border-gray-300 rounded-2xl p-6 back">
     <form class="rounded px-8 pt-6 pb-8 mb-4">
+      <div class="items-center mb-7">
+        <h2 class="text-center font-black text-4xl">
+          Login
+        </h2>
+      </div>
       <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
+        <label class="block text-gray-700 text-sm font-bold mb-1" for="username">
           Username
         </label>
         <input
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          class="bg-transparent border-b-2 border-emerald-500 appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           id="username"
           type="text"
-          placeholder="Enter your username"
+          placeholder="Username"
         />
       </div>
       <div class="mb-6">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+        <label class="block text-gray-700 text-sm font-bold mb-1" for="password">
           Password
         </label>
         <input
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          class="bg-transparent border-b-2 border-emerald-500 appearance-none rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           id="password"
           type="password"
           placeholder="Enter your password"
         />
       </div>
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between center">
         <button routerLink=""
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          class="w-full bg-emerald-500 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-2xl focus:outline-none focus:shadow-outline"
           type="button"
         >
           login

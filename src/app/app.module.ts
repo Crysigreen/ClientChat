@@ -11,6 +11,9 @@ import {FormsModule} from "@angular/forms";
 import {Routes, RouterModule, RouterOutlet} from "@angular/router";
 import { AuthentificationComponent } from './Components/authentification/authentification.component';
 import { HomepageComponent } from './Components/homepage/homepage.component';
+import {MessageService} from "./Services/message.service";
+
+
 
 const appRoutes: Routes = [
   {path: '', component: HomepageComponent},
@@ -26,7 +29,7 @@ const appRoutes: Routes = [
     AppMenuComponent,
     ChatInputComponent,
     AuthentificationComponent,
-    HomepageComponent
+    HomepageComponent,
   ],
   imports: [
     BrowserModule,
@@ -34,7 +37,9 @@ const appRoutes: Routes = [
     RouterOutlet,
     RouterModule.forRoot(appRoutes)
   ],
-  providers: [],
+  providers: [
+    MessageService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
