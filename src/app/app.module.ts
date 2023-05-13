@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import {SidebarComponent} from "../Moduls/side-bare";
-import {AppbarComponent} from "../Moduls/appbar";
 import {ChatWindowComponent} from "./Components/chatpagecomp/chatpage";
 import {AppMenuComponent} from "../Moduls/menu";
 import {ChatInputComponent} from "../Moduls/ChatInput";
@@ -12,6 +11,7 @@ import {Routes, RouterModule, RouterOutlet} from "@angular/router";
 import { AuthentificationComponent } from './Components/authentification/authentification.component';
 import { HomepageComponent } from './Components/homepage/homepage.component';
 import {MessageService} from "./Services/message.service";
+import { ChatListComponent } from './Components/chat-list/chat-list.component';
 
 
 
@@ -24,12 +24,12 @@ const appRoutes: Routes = [
   declarations: [
     AppComponent,
     SidebarComponent,
-    AppbarComponent,
     ChatWindowComponent,
     AppMenuComponent,
     ChatInputComponent,
     AuthentificationComponent,
     HomepageComponent,
+    ChatListComponent,
   ],
   imports: [
     BrowserModule,
