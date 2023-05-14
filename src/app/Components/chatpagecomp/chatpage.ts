@@ -11,24 +11,24 @@ type Message = {
 @Component({
   selector: 'app-chat-window',
   template: `
-    <div class="bg-gray-100 flex flex-col h-full">
-      <div class="bg-white border-b border-gray-300 h-16 px-5 py-5 flex justify-between items-center">
-        <div class="font-bold text-gray-600">{{ chatPartner }}</div>
-        <div>
-          <button class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-full mr-2">
-            <img src="../../../assets/CallIcon.svg" alt="video call" class="w-6 h-6">
+    <div class="bg-[#202329] flex flex-col h-full">
+      <div class="bg-[#202329] h-20 px-5 py-5 flex justify-between items-center">
+        <div class="text-2xl font-bold text-white">{{ chatPartner }}</div>
+        <div class="space-x-5">
+          <button class="px-2 py-1 rounded-full">
+            <img src="../../../assets/phone.png" alt="video call" class="w-6 h-6">
           </button>
-          <button class="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-full">
-            <img src="../../../assets/CallIcon.svg" alt="call" class="w-6 h-6">
+          <button class="px-2 py-1 rounded-full">
+            <img src="../../../assets/dots-vertical.png" alt="call" class="w-6 h-6">
           </button>
         </div>
       </div>
       <div class="flex-grow overflow-y-auto px-4 py-2">
         <div *ngFor="let message of messages" class="flex justify-end" #messageElement>
           <div [ngClass]="{'ml-auto': message.from === 'me'}"
-               class="bg-white rounded-lg p-2 mb-2 inline-block max-w-xs whitespace-normal break-words">
-            <div class="text-gray-600">{{ message.content }}</div>
-            <div class="text-xs text-gray-400">{{ message.timestamp | date:'shortTime' }}</div>
+               class="bg-[#3d65ff] rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl px-4 py-2 mb-2 inline-block max-w-xs whitespace-normal break-words">
+            <div class="text-white">{{ message.content }}</div>
+            <div class="text-xs text-white">{{ message.timestamp | date:'hh:mm' }}</div>
           </div>
         </div>
       </div>
@@ -59,6 +59,6 @@ export class ChatWindowComponent {
       lastMessageElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
   }
-  chatPartner: string = 'Alice';
+  chatPartner: string = 'Vladimir';
   /*messages: { content: string, from: string, timestamp: Date }[] = [    { content: 'Hi, how are you?', from: 'me', timestamp: new Date() },    { content: 'I\'m good, thanks. How about you?', from: 'Alice', timestamp: new Date() },    { content: 'I\'m doing well, thanks for asking.', from: 'me', timestamp: new Date() },  ];
 */}

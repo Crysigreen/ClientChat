@@ -11,10 +11,13 @@ type Message = {
 @Component({
   selector: 'app-chat-input',
   template: `
-    <div class="bg-white p-4">
+    <div class="bg-[#202329] p-4">
       <form (ngSubmit)="sendMessage()" class="flex">
-        <input [(ngModel)]="message" name="message" type="text" placeholder="Type your message here..." class="w-full px-2 py-1 border-gray-300 border rounded-md mr-2">
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Send</button>
+        <input [(ngModel)]="message" name="message" type="text" placeholder="Your message"
+               class="w-full bg-[#202329] px-2 py-1 outline-0 text-gray-200 rounded-md">
+        <button type="submit" class="px-4 py-2 rounded-md">
+          <img src="../assets/send.png" alt="video call" class="w-6 h-6">
+        </button>
       </form>
     </div>
   `,
