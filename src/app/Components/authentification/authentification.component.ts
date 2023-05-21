@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 })
 export class AuthentificationComponent {
 
+  id: string = '';
   username: string = '';
   password: string = '';
 
@@ -16,9 +17,9 @@ export class AuthentificationComponent {
 
   login(): void {
     // Выполняйте аутентификацию пользователя
-    this.authService.login(this.username, this.password).subscribe(
+    this.authService.login(this.id,this.username, this.password).subscribe(
       user => {
-        this.router.navigate(['/home']);
+        this.router.navigate(['']);
         // Аутентификация успешна
         // Сохраните информацию о текущем пользователе, если необходимо
       },

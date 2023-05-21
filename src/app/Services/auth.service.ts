@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpClientModule} from "@angular/common/http";
 import {BehaviorSubject, Observable} from "rxjs";
 import {User} from "../Models/user";
 
@@ -8,7 +8,7 @@ import {User} from "../Models/user";
 })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:5252/api/Users'; // Замените на URL вашего сервера
+  private apiUrl = 'https://localhost:7185/api/Users'; // Замените на URL вашего сервера
   private currentUserSubject: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
   public currentUser$: Observable<User | null> = this.currentUserSubject.asObservable();
 
@@ -18,8 +18,8 @@ export class AuthService {
     return this.http.post<User>(`${this.apiUrl}/register`, user);
   }
 
-  login(username: string, password: string): Observable<User> {
-    return this.http.post<User>(`${this.apiUrl}/login`, { username, password });
+  login(id: string, username: string, password: string): Observable<User> {
+    return this.http.post<User>(`${this.apiUrl}/login`, {id, username, password });
   }
 
   isAuthenticated(): boolean {
