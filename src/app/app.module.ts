@@ -12,12 +12,14 @@ import { AuthentificationComponent } from './Components/authentification/authent
 import { HomepageComponent } from './Components/homepage/homepage.component';
 import {MessageService} from "./Services/message.service";
 import { ChatListComponent } from './Components/chat-list/chat-list.component';
+import {AuthGuard} from "./guards/auth.guard";
 
 
 
 const appRoutes: Routes = [
-  {path: '', component: HomepageComponent},
+
   {path: 'auth', component: AuthentificationComponent},
+  {path: 'home', component: HomepageComponent, canActivate: [AuthGuard]}
 ]
 
 @NgModule({
