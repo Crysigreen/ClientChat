@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import {MessageService} from "../app/Services/message.service";
+import {HubConnectionBuilder} from "@microsoft/signalr";
 
 
 type Message = {
@@ -23,6 +24,36 @@ type Message = {
   `,
 })
 export class ChatInputComponent {
+
+  private hubConnection: any;
+
+  ngOnInit() {
+    this.hubConnection = new HubConnectionBuilder()
+      .withUrl('http://localhost:5252/chatHub') // Укажите URL-адрес вашего SignalR хаба
+      .build();
+
+    this.hubConnection.start().then(() => {
+      console.log('SignalR connection started');
+    }).catch((err: any) => console.error(err));
+
+    this.hubConnection.on('ReceiveMessage', (user: string, message: string) => {
+      // Обработка полученного сообщения
+      console.log(user + ' sent a message: ' + message);
+    });
+  }
+
+// Отправка сообщения
+//   sendMessage(user: string, message: string) {
+//     const from = 'me';
+//     const timestamp = new Date();
+//     const newMessage: Message = { content: this.message, from, timestamp };
+//     this.messageService.addMessage(newMessage);
+//
+//     this.hubConnection.invoke('SendMessage', user, message);
+//
+//     this.message = '';
+//   }
+
   message: string = '';
   constructor(private messageService: MessageService) {}
   sendMessage() {
