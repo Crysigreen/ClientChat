@@ -3,15 +3,17 @@
     <input name="Search" type="text" placeholder="Search..." class="w-full px-2 py-2 rounded-md outline-0 text-gray-200" style="background-color: #2e343d">
   </div>
   <div class="mt-5 mx-5">
-    <div class="bg-[#202329] hover:bg-[#2e343d] h-20 rounded-2xl flex items-center px-4 space-x-4">
-      <div class="shrink-0">
-        <img class="h-12 w-12" src="../assets/man.png" alt="ChitChat Logo">
-      </div>
-      <div>
-        <div class="text-xl font-medium text-white">
-          Vladimir
+    <div *ngFor="let user of users" (click)="openChat(user)">
+      <div class="bg-[#202329] hover:bg-[#2e343d] h-20 rounded-2xl flex items-center px-4 space-x-4">
+        <div class="shrink-0">
+          <img class="h-12 w-12" src="../assets/man.png" alt="ChitChat Logo">
         </div>
-        <p class="text-slate-300">welcome</p>
+        <div>
+          <div class="text-xl font-medium text-white">
+            {{user.username}}
+          </div>
+          <p class="text-slate-300">welcome</p>
+        </div>
       </div>
     </div>
   </div>

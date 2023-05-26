@@ -18,7 +18,10 @@ import {HttpClient, HttpClientModule} from "@angular/common/http";
 
 const appRoutes: Routes = [
   {path: '', component: HomepageComponent},
-  {path: 'auth', component: AuthentificationComponent}
+  {path: 'auth', component: AuthentificationComponent},
+  {path: 'chat', component: HomepageComponent},
+  { path: 'chat/:userId', component: HomepageComponent }
+
 ]
 
 @NgModule({

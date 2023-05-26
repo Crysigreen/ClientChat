@@ -8,6 +8,9 @@ import {User} from "../Models/user";
 })
 export class AuthService {
 
+  public MyId!: string;
+  public username!: string;
+
   private apiUrl = 'https://localhost:7185/api/Users'; // Замените на URL вашего сервера
   private currentUserSubject: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
   public currentUser$: Observable<User | null> = this.currentUserSubject.asObservable();

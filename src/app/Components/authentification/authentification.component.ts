@@ -19,6 +19,8 @@ export class AuthentificationComponent {
     // Выполняйте аутентификацию пользователя
     this.authService.login(this.id,this.username, this.password).subscribe(
       user => {
+        this.authService.MyId=user.id;
+        this.authService.username=user.username;
         this.router.navigate(['']);
         // Аутентификация успешна
         // Сохраните информацию о текущем пользователе, если необходимо
