@@ -3,7 +3,7 @@ import {MessageService} from "../app/Services/message.service";
 import {HubConnectionBuilder} from "@microsoft/signalr";
 import {ChatService} from "../app/Services/chat.service";
 import {AuthService} from "../app/Services/auth.service";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, ParamMap} from "@angular/router";
 
 
 type Message = {
@@ -16,7 +16,7 @@ type Message = {
   selector: 'app-chat-input',
   template: `
     <div class="bg-[#202329] p-4">
-      <form (ngSubmit)="sendMessage(MyID,receiverId,content)" class="flex">
+      <form (ngSubmit)="sendMessage(receiverUsername,content)" class="flex">
         <input [(ngModel)]="content" name="message" type="text" placeholder="Your message"
                class="w-full bg-[#202329] px-2 py-1 outline-0 text-gray-200 rounded-md">
         <button type="submit" class="px-4 py-2 rounded-md">
@@ -30,9 +30,13 @@ export class ChatInputComponent implements OnInit {
 
   MyID:string='6469574935f544f37497aaa2';
   receiverId:string ='64695f7935f544f37497aaa5';
+  receiverUsername: string ='';
   ngOnInit() {
     this.MyID = this.authService.MyId;
     let receiverId = this.route.snapshot.paramMap.get('userId');
+    this.route.queryParams.subscribe(params => {
+      this.receiverUsername = params['username'];
+    });
   }
 
 // Отправка сообщения
@@ -50,9 +54,9 @@ export class ChatInputComponent implements OnInit {
   content: string = '';
   constructor(private messageService: MessageService, private chatService: ChatService,private authService: AuthService,private route: ActivatedRoute) {}
 
-  sendMessage(senderId: string, receiverId: string, content: string): void {
+  sendMessage( receiverUsername: string, content: string): void {
     // Отправьте сообщение
-    this.chatService.sendMessage(senderId,receiverId,content);
+    this.chatService.sendMessage(receiverUsername, content);
   }
 
   // sendMessage() {

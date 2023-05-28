@@ -4,7 +4,7 @@ import {ActivatedRoute, ParamMap} from "@angular/router";
 import {UserService} from "../../Services/user.service";
 import {Users} from "../../Models/users";
 import {ChatService} from "../../Services/chat.service";
-
+import {AuthService} from "../../Services/auth.service";
 
 type Message = {
   content: string;
@@ -44,16 +44,17 @@ export class ChatWindowComponent implements OnInit {
   @ViewChildren('messageElement') messageElements!: QueryList<ElementRef>;
   messages: Message[] = [];
   userId!: string | null;
-  constructor(private messageService: MessageService, private route: ActivatedRoute, private userService: UserService,private chatService: ChatService) {}
+  constructor(private messageService: MessageService, private route: ActivatedRoute, private userService: UserService,private chatService: ChatService, private authService: AuthService) {}
   ngOnInit() {
+    // this.chatService.startConnection(this.authService.username);
     this.userId = this.route.snapshot.paramMap.get('userId');
     this.route.queryParamMap.subscribe((queryParams: ParamMap) => {
       this.userName = queryParams.get('username');
     });
-    this.chatService.receiveMessage((message: any) => {
-      // Обработайте полученное сообщение
-      console.log('Received message:', message);
-    });
+    // this.chatService.receiveMessage((message: any) => {
+    //   // Обработайте полученное сообщение
+    //   console.log('Received message:', message);
+    // });
     // this.route.paramMap.subscribe((params: ParamMap) => {
     //   this.userId = params.get('userId');
     //   console.log('Opened chat with user ID:', this.userId);

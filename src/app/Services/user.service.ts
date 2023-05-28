@@ -8,7 +8,7 @@ import { User } from "../Models/user";
 })
 export class UserService {
 
-  private apiUrl = 'http://localhost:5252/api/users'; // Замените на URL вашего сервера
+  private apiUrl = 'https://localhost:7185/api/users'; // Замените на URL вашего сервера
 
   constructor(private http: HttpClient) {}
 

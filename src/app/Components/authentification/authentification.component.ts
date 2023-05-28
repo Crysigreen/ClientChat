@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {AuthService} from "../../Services/auth.service";
 import { Router } from '@angular/router';
+import {ChatService} from "../../Services/chat.service";
 
 @Component({
   selector: 'app-authentification',
@@ -13,7 +14,7 @@ export class AuthentificationComponent {
   username: string = '';
   password: string = '';
 
-  constructor(private authService: AuthService,private router: Router) {}
+  constructor(private authService: AuthService,private router: Router, private chatService: ChatService) {}
 
   login(): void {
     // Выполняйте аутентификацию пользователя
@@ -21,6 +22,7 @@ export class AuthentificationComponent {
       user => {
         this.authService.MyId=user.id;
         this.authService.username=user.username;
+        this.chatService.startConnection(this.authService.username);
         this.router.navigate(['']);
         // Аутентификация успешна
         // Сохраните информацию о текущем пользователе, если необходимо
