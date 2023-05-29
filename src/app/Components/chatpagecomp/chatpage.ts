@@ -5,6 +5,7 @@ import {UserService} from "../../Services/user.service";
 import {Users} from "../../Models/users";
 import {ChatService} from "../../Services/chat.service";
 import {AuthService} from "../../Services/auth.service";
+import {MessageHistory} from "../../Models/message-history";
 
 type Message = {
   content: string;
@@ -28,8 +29,8 @@ type Message = {
         </div>
       </div>
       <div class="flex-grow overflow-y-auto px-4 py-2">
-        <div *ngFor="let message of messages" class="flex justify-end" #messageElement>
-          <div [ngClass]="{'ml-auto': message.from === 'me'}"
+        <div *ngFor="let message of currentChatHistory" class="flex justify-end" #messageElement>
+          <div [ngClass]="{'ml-auto': message.from === MyName}"
                class="bg-[#3d65ff] rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl px-4 py-2 mb-2 inline-block max-w-xs whitespace-normal break-words">
             <div class="text-white">{{ message.content }}</div>
             <div class="text-xs text-white">{{ message.timestamp | date:'hh:mm' }}</div>
@@ -42,7 +43,9 @@ type Message = {
 })
 export class ChatWindowComponent implements OnInit {
   @ViewChildren('messageElement') messageElements!: QueryList<ElementRef>;
+  currentChatHistory: MessageHistory[] = [];
   messages: Message[] = [];
+  MyName= this.authService.username;
   userId!: string | null;
   constructor(private messageService: MessageService, private route: ActivatedRoute, private userService: UserService,private chatService: ChatService, private authService: AuthService) {}
   ngOnInit() {
@@ -51,20 +54,14 @@ export class ChatWindowComponent implements OnInit {
     this.route.queryParamMap.subscribe((queryParams: ParamMap) => {
       this.userName = queryParams.get('username');
     });
-    // this.chatService.receiveMessage((message: any) => {
-    //   // Обработайте полученное сообщение
-    //   console.log('Received message:', message);
-    // });
-    // this.route.paramMap.subscribe((params: ParamMap) => {
-    //   this.userId = params.get('userId');
-    //   console.log('Opened chat with user ID:', this.userId);
-    // });
-    // this.getUserInfo();
-    this.messages = this.messageService.getMessages();
+
+    this.currentChatHistory = this.messageService.getMessages();
     setTimeout(() => {
       this.scrollToBottom();
     }, 0);
   }
+
+
   scrollToBottom(): void {
     this.messageElements.changes.subscribe(() => {
       this.scrollToBottomSmooth();

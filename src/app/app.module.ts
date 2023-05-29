@@ -14,13 +14,19 @@ import {MessageService} from "./Services/message.service";
 import { ChatListComponent } from './Components/chat-list/chat-list.component';
 import {AuthGuard} from "./guards/auth.guard";
 import {HttpClient, HttpClientModule} from "@angular/common/http";
+import { ChatComponent } from './Components/chat/chat.component';
+
 
 
 const appRoutes: Routes = [
-  {path: '', component: HomepageComponent},
+  {path: '', redirectTo: '/chats', pathMatch: 'full'},
   {path: 'auth', component: AuthentificationComponent},
-  {path: 'chat', component: HomepageComponent},
-  { path: 'chat/:userId', component: HomepageComponent }
+  {path: 'chats',component:HomepageComponent,
+    children:[
+      { path: ':userId', component: ChatComponent }
+    ]}
+  // {path: 'chat', component: HomepageComponent},
+  // { path: 'chat/:userId', component: ChatComponent }
 
 ]
 
@@ -34,6 +40,7 @@ const appRoutes: Routes = [
     AuthentificationComponent,
     HomepageComponent,
     ChatListComponent,
+    ChatComponent,
   ],
   imports: [
     HttpClientModule,

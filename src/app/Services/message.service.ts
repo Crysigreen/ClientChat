@@ -1,4 +1,7 @@
 import { Injectable } from '@angular/core';
+import {MessageHistory} from "../Models/message-history";
+import {HttpClient} from "@angular/common/http";
+import {ChatService} from "./chat.service";
 
 type Message = {
   content: string;
@@ -12,13 +15,21 @@ type Message = {
 export class MessageService {
 
   private messages: Message[] = [];
+  public currentChatHistory: MessageHistory[] = [];
 
-  getMessages(): Message[] {
-    return this.messages;
+  constructor(private chatService: ChatService ) {}
+
+  getMessages(): MessageHistory[] {
+    return this.currentChatHistory;
   }
 
-  addMessage(message: Message) {
-    this.messages.push(message);
+  // addMessage(message: MessageHistory[]) {
+  //   this.messages.push(message);
+  // }
+
+  public selectChat(friendUsername: string): void {
+    this.currentChatHistory = this.chatService.getChatHistory(friendUsername);
+
   }
 
 }
