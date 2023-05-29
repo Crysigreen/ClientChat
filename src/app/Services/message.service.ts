@@ -27,9 +27,9 @@ export class MessageService {
   //   this.messages.push(message);
   // }
 
-  public selectChat(friendUsername: string): void {
-    this.currentChatHistory = this.chatService.getChatHistory(friendUsername);
-
-  }
+  // public selectChat(friendUsername: string): void {
+  //   this.currentChatHistory = this.chatService.getChatHistory(friendUsername);
+  //
+  // }
 
 }

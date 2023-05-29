@@ -20,89 +20,68 @@ export class ChatService {
 
   // private hubConnection!: HubConnection;
   private hubConnection!: signalR.HubConnection;
+  private chats: { [key: string]: { messages: ChatMessage[], subject: Subject<ChatMessage[]> } } = {};
+
   constructor(private authService: AuthService) { }
 
-  public newMessageReceived = new Subject<ChatMessage>();
-  // Объект, содержащий историю чата для каждого пользователя.
-  private chats: { [key: string]: ChatMessage[]; } = {};
-
-  public startConnection = (username: string) => {
-    // Инициализация SignalR соединения.
+  public startConnection(username: string): Promise<void> {
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(`https://localhost:7185/chatHub?username=${encodeURIComponent(username)}`)
       .build();
 
-    // Начало соединения.
-    this.hubConnection
-      .start()
-      .then(() => console.log('Connection started'))
-      .catch(err => console.log('Error while starting connection: ' + err));
-
-    // Добавление слушателя для входящих сообщений.
-    this.addTransferChartDataListener();
-  }
-
-  public addTransferChartDataListener = () => {
-    // Когда получаем сообщение, добавляем его в соответствующий массив сообщений.
     this.hubConnection.on('ReceiveMessage', (data) => {
-      const message = {
+      const message: ChatMessage = {
         content: data.content,
         from: data.from,
         to: data.to,
-        timestamp: data.timestamp,  // опционально
+        timestamp: new Date(data.timestamp)
       };
 
-      if (this.chats[data.from]) {
-        this.chats[data.from].push(message);
-      } else {
-        this.chats[data.from] = [message];
+      if (!this.chats[data.from]) {
+        this.chats[data.from] = { messages: [], subject: new Subject<ChatMessage[]>() };
       }
-      this.newMessageReceived.next(message);
-      console.log('new message')
+
+      this.chats[data.from].messages.push(message);
+      this.chats[data.from].subject.next(this.chats[data.from].messages);
     });
+
+
+
+    return this.hubConnection.start()
+      .then(() => console.log('Connection started'))
+      .catch(err => console.log('Error while starting connection: ' + err));
   }
 
-  // startConnection(): void {
-  //   this.hubConnection = new HubConnectionBuilder()
-  //     .withUrl('https://localhost:7185/chatHub') // URL, где запущен сервер SignalR
-  //     .build();
-  //
-  //   this.hubConnection.start()
-  //     .then(() => console.log('SignalR connection started'))
-  //     .catch(err => console.error('Error while starting SignalR connection:', err));
-  // }
+  private selectedUserSubject = new Subject<string>();
+  selectedUser$ = this.selectedUserSubject.asObservable();
 
-  public sendMessage = (receiverUsername: string, message: string) => {
+  public selectUser(username: string): void {
+    this.selectedUserSubject.next(username);
+  }
 
-    const myMessage = {
+  public sendMessage(receiverUsername: string, message: string): void {
+    const myMessage: ChatMessage = {
       content: message,
-      from: this.authService.MyId,  // предполагается, что myUsername хранит ваше имя пользователя
+      from: this.authService.MyId,  // предполагается, что MyId хранит ваше имя пользователя
       to: receiverUsername,
-      timestamp: new Date(),  // опционально
+      timestamp: new Date(),
     };
 
-    // Отправка сообщения через SignalR.
     this.hubConnection.invoke('SendMessage', receiverUsername, message).catch(err => console.error(err));
 
-    if (this.chats[receiverUsername]) {
-      this.chats[receiverUsername].push(myMessage);
-    } else {
-      this.chats[receiverUsername] = [myMessage];
+    if (!this.chats[receiverUsername]) {
+      this.chats[receiverUsername] = { messages: [], subject: new Subject<ChatMessage[]>() };
     }
 
+    this.chats[receiverUsername].messages.push(myMessage);
+    this.chats[receiverUsername].subject.next(this.chats[receiverUsername].messages);
   }
 
-  public getChatHistory = (username: string) => {
-    // Получение истории чата для данного пользователя.
-    return this.chats[username] || [];
-  }
+  public getChatHistory(username: string): Subject<ChatMessage[]> {
+    if (!this.chats[username]) {
+      this.chats[username] = { messages: [], subject: new Subject<ChatMessage[]>() };
+    }
 
-  // sendMessage(senderId: string, receiverId: string, content: string): void {
-  //   this.hubConnection.invoke('SendMessage', senderId, receiverId, content)
-  //     .catch(err => console.error('Error while sending message:', err));
-  // }
-  //
-  // receiveMessage(callback: (message: any) => void): void {
-  //   this.hubConnection.on('ReceiveMessage', callback);
-  // }
+    return this.chats[username].subject;
+  }
 }

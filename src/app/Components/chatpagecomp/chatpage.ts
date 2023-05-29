@@ -6,6 +6,7 @@ import {Users} from "../../Models/users";
 import {ChatService} from "../../Services/chat.service";
 import {AuthService} from "../../Services/auth.service";
 import {MessageHistory} from "../../Models/message-history";
+import {Subject, takeUntil} from "rxjs";
 
 type Message = {
   content: string;
@@ -43,10 +44,11 @@ type Message = {
 })
 export class ChatWindowComponent implements OnInit {
   @ViewChildren('messageElement') messageElements!: QueryList<ElementRef>;
-  currentChatHistory: MessageHistory[] = [];
+  public currentChatHistory: MessageHistory[] = [];
   messages: Message[] = [];
   MyName= this.authService.username;
   userId!: string | null;
+  userName!: string | null;
   constructor(private messageService: MessageService, private route: ActivatedRoute, private userService: UserService,private chatService: ChatService, private authService: AuthService) {}
   ngOnInit() {
     // this.chatService.startConnection(this.authService.username);
@@ -55,12 +57,38 @@ export class ChatWindowComponent implements OnInit {
       this.userName = queryParams.get('username');
     });
 
-    this.currentChatHistory = this.messageService.getMessages();
+    this.chatService.selectedUser$
+      .pipe(takeUntil(this.onDestroy))
+      .subscribe((username) => {
+        this.userName = username;
+        if (username) {
+          this.chatService.getChatHistory(username)
+            .pipe(takeUntil(this.onDestroy))
+            .subscribe((history) => {
+              this.currentChatHistory = history;
+            });
+        }
+      });
+    // this.currentChatHistory = this.messageService.getMessages();
     setTimeout(() => {
       this.scrollToBottom();
     }, 0);
   }
 
+  private onDestroy = new Subject<void>();
+
+  ngOnDestroy(): void {
+    this.onDestroy.next();
+    this.onDestroy.complete();
+  }
+
+  // public selectChat(friendUsername: string): void {
+  //   this.chatService.getChatHistory(friendUsername)
+  //     .pipe(takeUntil(this.onDestroy))
+  //     .subscribe((history) => {
+  //       this.currentChatHistory = history;
+  //     });
+  // }
 
   scrollToBottom(): void {
     this.messageElements.changes.subscribe(() => {
@@ -84,6 +112,5 @@ export class ChatWindowComponent implements OnInit {
       lastMessageElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
   }
-  userName!: string | null;
   /*messages: { content: string, from: string, timestamp: Date }[] = [    { content: 'Hi, how are you?', from: 'me', timestamp: new Date() },    { content: 'I\'m good, thanks. How about you?', from: 'Alice', timestamp: new Date() },    { content: 'I\'m doing well, thanks for asking.', from: 'me', timestamp: new Date() },  ];
 */}
