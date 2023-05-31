@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import * as signalR from '@aspnet/signalr';
 import {AuthService} from "./auth.service";
-import {Subject} from "rxjs";
+import {Observable, of, Subject} from "rxjs";
 
 
 
@@ -62,7 +62,7 @@ export class ChatService {
   public sendMessage(receiverUsername: string, message: string): void {
     const myMessage: ChatMessage = {
       content: message,
-      from: this.authService.MyId,  // предполагается, что MyId хранит ваше имя пользователя
+      from: this.authService.username,  // предполагается, что MyId хранит ваше имя пользователя
       to: receiverUsername,
       timestamp: new Date(),
     };
@@ -77,11 +77,29 @@ export class ChatService {
     this.chats[receiverUsername].subject.next(this.chats[receiverUsername].messages);
   }
 
-  public getChatHistory(username: string): Subject<ChatMessage[]> {
+  public getChatHistory(username: string): Observable<ChatMessage[]> {
     if (!this.chats[username]) {
       this.chats[username] = { messages: [], subject: new Subject<ChatMessage[]>() };
     }
 
+    // Return a copy of the chat history
+    return of([...this.chats[username].messages]);
+  }
+
+  public getChatUpdates(username: string): Subject<ChatMessage[]> {
+    if (!this.chats[username]) {
+      this.chats[username] = { messages: [], subject: new Subject<ChatMessage[]>() };
+    }
+
+    // Return the subject that will be updated with new messages
     return this.chats[username].subject;
   }
+
+  // public getChatHistory(username: string): Subject<ChatMessage[]> {
+  //   if (!this.chats[username]) {
+  //     this.chats[username] = { messages: [], subject: new Subject<ChatMessage[]>() };
+  //   }
+  //
+  //   return this.chats[username].subject;
+  // }
 }

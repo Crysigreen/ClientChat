@@ -30,13 +30,19 @@ type Message = {
         </div>
       </div>
       <div class="flex-grow overflow-y-auto px-4 py-2">
-        <div *ngFor="let message of currentChatHistory" class="flex justify-end" #messageElement>
-          <div [ngClass]="{'ml-auto': message.from === MyName}"
-               class="bg-[#3d65ff] rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl px-4 py-2 mb-2 inline-block max-w-xs whitespace-normal break-words">
+        <div *ngFor="let message of currentChatHistory" [ngClass]="{'flex-row-reverse': message.from === MyName, 'flex-row': message.from !== MyName}" class="flex justify-between" #messageElement>
+          <div class="bg-[#3d65ff] rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl px-4 py-2 mb-2 inline-block max-w-xs whitespace-normal break-words">
             <div class="text-white">{{ message.content }}</div>
             <div class="text-xs text-white">{{ message.timestamp | date:'hh:mm' }}</div>
           </div>
         </div>
+<!--        <div *ngFor="let message of currentChatHistory" class="flex justify-end" #messageElement>-->
+<!--          <div [ngClass]="{'ml-auto': message.from === MyName}"-->
+<!--               class="bg-[#3d65ff] rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl px-4 py-2 mb-2 inline-block max-w-xs whitespace-normal break-words">-->
+<!--            <div class="text-white">{{ message.content }}</div>-->
+<!--            <div class="text-xs text-white">{{ message.timestamp | date:'hh:mm' }}</div>-->
+<!--          </div>-->
+<!--        </div>-->
       </div>
     </div>
   `
@@ -45,10 +51,10 @@ type Message = {
 export class ChatWindowComponent implements OnInit {
   @ViewChildren('messageElement') messageElements!: QueryList<ElementRef>;
   public currentChatHistory: MessageHistory[] = [];
-  messages: Message[] = [];
   MyName= this.authService.username;
   userId!: string | null;
   userName!: string | null;
+  Friend!: string;
   constructor(private messageService: MessageService, private route: ActivatedRoute, private userService: UserService,private chatService: ChatService, private authService: AuthService) {}
   ngOnInit() {
     // this.chatService.startConnection(this.authService.username);
@@ -56,19 +62,50 @@ export class ChatWindowComponent implements OnInit {
     this.route.queryParamMap.subscribe((queryParams: ParamMap) => {
       this.userName = queryParams.get('username');
     });
+    this.route.queryParams.subscribe(params => {
+      this.Friend = params['username'];
 
-    this.chatService.selectedUser$
-      .pipe(takeUntil(this.onDestroy))
-      .subscribe((username) => {
-        this.userName = username;
-        if (username) {
-          this.chatService.getChatHistory(username)
-            .pipe(takeUntil(this.onDestroy))
-            .subscribe((history) => {
-              this.currentChatHistory = history;
-            });
-        }
-      });
+      if (this.Friend) {
+        this.chatService.getChatHistory(this.Friend)
+          .pipe(takeUntil(this.onDestroy))
+          .subscribe((history) => {
+            this.currentChatHistory = history;
+
+            // After the chat history is loaded, subscribe to new messages
+            this.chatService.getChatUpdates(this.Friend)
+              .pipe(takeUntil(this.onDestroy))
+              .subscribe((newMessages) => {
+                this.currentChatHistory = newMessages;
+              });
+          });
+      }
+
+
+      // if (this.Friend) {
+      //   this.chatService.getChatHistory(this.Friend)
+      //     .pipe(takeUntil(this.onDestroy))
+      //     .subscribe((history) => {
+      //       this.currentChatHistory = history;
+      //     });
+      // }
+    });
+
+
+
+
+
+    // this.chatService.selectedUser$
+    //   .pipe(takeUntil(this.onDestroy))
+    //   .subscribe((username) => {
+    //     this.userName = username;
+    //     if (username) {
+    //       this.chatService.getChatHistory(username)
+    //         .pipe(takeUntil(this.onDestroy))
+    //         .subscribe((history) => {
+    //           this.currentChatHistory = history;
+    //         });
+    //     }
+    //   });
     // this.currentChatHistory = this.messageService.getMessages();
     setTimeout(() => {
       this.scrollToBottom();
