@@ -31,18 +31,11 @@ type Message = {
       </div>
       <div class="flex-grow overflow-y-auto px-4 py-2">
         <div *ngFor="let message of currentChatHistory" [ngClass]="{'flex-row-reverse': message.from === MyName, 'flex-row': message.from !== MyName}" class="flex justify-between" #messageElement>
-          <div class="bg-[#3d65ff] rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl px-4 py-2 mb-2 inline-block max-w-xs whitespace-normal break-words">
+          <div [class]="'bg-[#3d65ff] px-4 py-2 mb-2 inline-block max-w-xs whitespace-normal break-words ' + (message.from !== MyName ? 'rounded-br-2xl rounded-tr-2xl rounded-tl-2xl' : 'rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl')">
             <div class="text-white">{{ message.content }}</div>
-            <div class="text-xs text-white">{{ message.timestamp | date:'hh:mm' }}</div>
+            <div class="text-xs text-white text-right">{{ message.timestamp | date:'hh:mm' }}</div>
           </div>
         </div>
-<!--        <div *ngFor="let message of currentChatHistory" class="flex justify-end" #messageElement>-->
-<!--          <div [ngClass]="{'ml-auto': message.from === MyName}"-->
-<!--               class="bg-[#3d65ff] rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl px-4 py-2 mb-2 inline-block max-w-xs whitespace-normal break-words">-->
-<!--            <div class="text-white">{{ message.content }}</div>-->
-<!--            <div class="text-xs text-white">{{ message.timestamp | date:'hh:mm' }}</div>-->
-<!--          </div>-->
-<!--        </div>-->
       </div>
     </div>
   `

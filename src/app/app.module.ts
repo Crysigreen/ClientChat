@@ -22,7 +22,7 @@ import {AuthInterceptor} from "./Interceptor/auth.interceptor";
 const appRoutes: Routes = [
   {path: '', redirectTo: '/chats', pathMatch: 'full'},
   {path: 'auth', component: AuthentificationComponent},
-  {path: 'chats',component:HomepageComponent,
+  {path: 'chats',component:HomepageComponent,canActivate: [AuthGuard] ,
     children:[
       { path: ':userId', component: ChatComponent }
     ]}

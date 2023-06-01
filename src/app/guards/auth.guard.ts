@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import {
+  ActivatedRouteSnapshot,
   CanActivate,
-  Router
+  Router, RouterStateSnapshot, UrlTree
 } from '@angular/router';
 import { AuthService } from "../Services/auth.service";
 import {Observable} from "rxjs";
@@ -12,15 +13,15 @@ import {Observable} from "rxjs";
 export class AuthGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
-  canActivate(): boolean {
-    const currentUser = this.authService.getCurrentUser();
-    if (currentUser) {
-      // Пользователь аутентифицирован, разрешаем доступ
-      return true;
-    } else {
-      // Пользователь не аутентифицирован, перенаправляем на страницу входа
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    const isAuth = !!this.authService.token;
+
+    if (!isAuth) {
       this.router.navigate(['/auth']);
-      return false;
     }
+
+    return isAuth;
   }
 }
