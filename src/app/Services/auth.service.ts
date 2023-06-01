@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpClientModule} from "@angular/common/http";
-import {BehaviorSubject, Observable} from "rxjs";
+import {HttpClient, HttpClientModule, HttpHeaders, HttpParams} from "@angular/common/http";
+import {BehaviorSubject, Observable, tap} from "rxjs";
 import {User} from "../Models/user";
 
 @Injectable({
@@ -8,22 +8,51 @@ import {User} from "../Models/user";
 })
 export class AuthService {
 
+  public token: string = '';
+  tokenSubject: BehaviorSubject<string | null>;
+
   public MyId!: string;
-  public username!: string;
+  public MyUsername!: string ;
 
   private apiUrl = 'https://localhost:7185/api/Users'; // Замените на URL вашего сервера
   private currentUserSubject: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
   public currentUser$: Observable<User | null> = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    const token = localStorage.getItem('auth-token');
+    this.tokenSubject = new BehaviorSubject<string | null>(token);
+  }
 
   register(user: User): Observable<User> {
     return this.http.post<User>(`${this.apiUrl}/register`, user);
   }
 
-  login(id: string, username: string, password: string): Observable<User> {
-    return this.http.post<User>(`${this.apiUrl}/login`, {id, username, password });
+  // login(id: string, username: string, password: string): Observable<User> {
+  //   return this.http.post<User>(`${this.apiUrl}/login`, {id, username, password });
+  // }
+
+  get token1(): string | null {
+    return this.tokenSubject.value;
   }
+
+  login(username: string, password: string) {
+    this.MyUsername=username;
+    const params = new HttpParams()
+      .set('username', username)
+      .set('password', password);
+    return this.http.post<{ token: string }>(`${this.apiUrl}/login`, {}, { params })
+      .pipe(tap(({token}) => {
+        this.token = token;
+        this.tokenSubject.next(token);
+        localStorage.setItem('username', username);
+        localStorage.setItem('auth-token', token);
+      }));
+  }
+
+  getToken() {
+    return this.tokenSubject.asObservable();
+  }
+
 
   isAuthenticated(): boolean {
     // Replace this logic with your actual authentication check

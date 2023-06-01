@@ -51,7 +51,7 @@ type Message = {
 export class ChatWindowComponent implements OnInit {
   @ViewChildren('messageElement') messageElements!: QueryList<ElementRef>;
   public currentChatHistory: MessageHistory[] = [];
-  MyName= this.authService.username;
+  MyName= this.authService.MyUsername;
   userId!: string | null;
   userName!: string | null;
   Friend!: string;

@@ -32,7 +32,7 @@ export class ChatListComponent implements OnInit {
   openChat(user: Users): void {
     // Здесь можно выполнить действия при открытии чата с пользователем,
     if (user.username) {
-      this.chatService.selectUser(user.username);
+      // this.chatService.selectUser(user.username);
       // this.messageService.selectChat(user.username)
       // Redirect the user to the chat page with the selected user
       this.router.navigate(['/chats', user.id], { queryParams: { username: user.username } } );

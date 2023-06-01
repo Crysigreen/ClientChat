@@ -13,8 +13,9 @@ import { HomepageComponent } from './Components/homepage/homepage.component';
 import {MessageService} from "./Services/message.service";
 import { ChatListComponent } from './Components/chat-list/chat-list.component';
 import {AuthGuard} from "./guards/auth.guard";
-import {HttpClient, HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
 import { ChatComponent } from './Components/chat/chat.component';
+import {AuthInterceptor} from "./Interceptor/auth.interceptor";
 
 
 
@@ -50,7 +51,8 @@ const appRoutes: Routes = [
     RouterModule.forRoot(appRoutes)
   ],
   providers: [
-    MessageService
+    MessageService,
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
   ],
   bootstrap: [AppComponent]
 })

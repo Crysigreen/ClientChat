@@ -52,17 +52,17 @@ export class ChatService {
       .catch(err => console.log('Error while starting connection: ' + err));
   }
 
-  private selectedUserSubject = new Subject<string>();
-  selectedUser$ = this.selectedUserSubject.asObservable();
-
-  public selectUser(username: string): void {
-    this.selectedUserSubject.next(username);
-  }
+  // private selectedUserSubject = new Subject<string>();
+  // selectedUser$ = this.selectedUserSubject.asObservable();
+  //
+  // public selectUser(username: string): void {
+  //   this.selectedUserSubject.next(username);
+  // }
 
   public sendMessage(receiverUsername: string, message: string): void {
     const myMessage: ChatMessage = {
       content: message,
-      from: this.authService.username,  // предполагается, что MyId хранит ваше имя пользователя
+      from: this.authService.MyUsername,  // предполагается, что MyId хранит ваше имя пользователя
       to: receiverUsername,
       timestamp: new Date(),
     };
