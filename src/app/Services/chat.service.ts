@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import * as signalR from '@aspnet/signalr';
 import {AuthService} from "./auth.service";
-import {Observable, of, Subject} from "rxjs";
+import {map, Observable, of, Subject} from "rxjs";
+import {HttpClient, HttpParams} from "@angular/common/http";
+import {ChatHistory} from "../Models/chat-history";
 
 
 
@@ -22,7 +24,9 @@ export class ChatService {
   private hubConnection!: signalR.HubConnection;
   private chats: { [key: string]: { messages: ChatMessage[], subject: Subject<ChatMessage[]> } } = {};
 
-  constructor(private authService: AuthService) { }
+  private apiUrl = 'https://localhost:7185/api/Chat';
+
+  constructor(private authService: AuthService, private http: HttpClient) { }
 
   public startConnection(username: string): Promise<void> {
     this.hubConnection = new signalR.HubConnectionBuilder()
@@ -84,6 +88,21 @@ export class ChatService {
 
     // Return a copy of the chat history
     return of([...this.chats[username].messages]);
+  }
+
+  public getChatHistoryDB(username: string, friend: string, pageIndex: number, pageSize: number): Observable<ChatMessage[]> {
+    const params = new HttpParams()
+      .set('senderUsername', username)
+      .set('friendUsername', friend)
+      .set('pageIndex', pageIndex)
+      .set('pageSize', pageSize);
+    return this.http.get<ChatHistory[]>(`${this.apiUrl}/GetChatHistory`,{params},)
+      .pipe(map(messages => messages.map(m => ({
+        content: m.content,
+        from: m.from,
+        to: m.to,
+        timestamp: new Date(m.timestamp)
+      }))));
   }
 
   public getChatUpdates(username: string): Subject<ChatMessage[]> {

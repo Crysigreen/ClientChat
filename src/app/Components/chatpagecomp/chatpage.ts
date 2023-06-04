@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, QueryList, ViewChildren} from "@angular/core";
+import {Component, ElementRef, HostListener, OnInit, QueryList, ViewChildren} from "@angular/core";
 import {MessageService} from "../../Services/message.service";
 import {ActivatedRoute, ParamMap} from "@angular/router";
 import {UserService} from "../../Services/user.service";
@@ -7,12 +7,14 @@ import {ChatService} from "../../Services/chat.service";
 import {AuthService} from "../../Services/auth.service";
 import {MessageHistory} from "../../Models/message-history";
 import {Subject, takeUntil} from "rxjs";
+import {ChatHistory} from "../../Models/chat-history";
 
 type Message = {
   content: string;
   from: string;
   timestamp: Date;
 };
+
 
 @Component({
   selector: 'app-chat-window',
@@ -48,6 +50,10 @@ export class ChatWindowComponent implements OnInit {
   userId!: string | null;
   userName!: string | null;
   Friend!: string;
+  private pageIndex: number = 0; // Сhat history page number
+  private pageSize: number = 20; // Number of uploaded messages
+  private allMessagesLoaded: boolean = false; // Flag indicating whether all messages are loaded
+
   constructor(private messageService: MessageService, private route: ActivatedRoute, private userService: UserService,private chatService: ChatService, private authService: AuthService) {}
   ngOnInit() {
     // this.chatService.startConnection(this.authService.username);
@@ -58,51 +64,53 @@ export class ChatWindowComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       this.Friend = params['username'];
 
+      this.loadMoreMessages();
       if (this.Friend) {
-        this.chatService.getChatHistory(this.Friend)
+        // this.chatService.getChatHistory(this.Friend)
+        //   .pipe(takeUntil(this.onDestroy))
+        //   .subscribe((history) => {
+        //     this.currentChatHistory = history;
+        //
+        //     // After the chat history is loaded, subscribe to new messages
+        //     this.chatService.getChatUpdates(this.Friend)
+        //       .pipe(takeUntil(this.onDestroy))
+        //       .subscribe((newMessages) => {
+        //         this.currentChatHistory = newMessages;
+        //       });
+        //   });
+        this.chatService.getChatUpdates(this.Friend)
           .pipe(takeUntil(this.onDestroy))
-          .subscribe((history) => {
-            this.currentChatHistory = history;
-
-            // After the chat history is loaded, subscribe to new messages
-            this.chatService.getChatUpdates(this.Friend)
-              .pipe(takeUntil(this.onDestroy))
-              .subscribe((newMessages) => {
-                this.currentChatHistory = newMessages;
-              });
+          .subscribe((newMessages) => {
+            this.currentChatHistory = newMessages;
           });
       }
-
-
-      // if (this.Friend) {
-      //   this.chatService.getChatHistory(this.Friend)
-      //     .pipe(takeUntil(this.onDestroy))
-      //     .subscribe((history) => {
-      //       this.currentChatHistory = history;
-      //     });
-      // }
     });
 
-
-
-
-
-    // this.chatService.selectedUser$
-    //   .pipe(takeUntil(this.onDestroy))
-    //   .subscribe((username) => {
-    //     this.userName = username;
-    //     if (username) {
-    //       this.chatService.getChatHistory(username)
-    //         .pipe(takeUntil(this.onDestroy))
-    //         .subscribe((history) => {
-    //           this.currentChatHistory = history;
-    //         });
-    //     }
-    //   });
-    // this.currentChatHistory = this.messageService.getMessages();
     setTimeout(() => {
       this.scrollToBottom();
     }, 0);
+  }
+  @HostListener("window:scroll", ["$event"])
+  onWindowScroll() {
+    let pos = (document.documentElement.scrollTop || document.body.scrollTop) + document.documentElement.offsetHeight;
+    let max = document.documentElement.scrollHeight;
+    // проверяем, достигли ли мы верха
+    if (pos == max ) {
+      // Если достигли, загружаем больше сообщений
+      this.loadMoreMessages();
+    }
+  }
+
+  loadMoreMessages() {
+    if (!this.allMessagesLoaded) {
+      this.chatService.getChatHistoryDB(this.MyName, this.Friend, this.pageIndex, this.pageSize)
+        .pipe(takeUntil(this.onDestroy))
+        .subscribe((history) => {
+          // Здесь добавляем новые сообщения в начало массива
+          this.currentChatHistory = [...history, ...this.currentChatHistory];
+        });
+      this.pageIndex++;
+    }
   }
 
   private onDestroy = new Subject<void>();
