@@ -7,7 +7,7 @@ import {ChatWindowComponent} from "./Components/chatpagecomp/chatpage";
 import {AppMenuComponent} from "../Moduls/menu";
 import {ChatInputComponent} from "../Moduls/ChatInput";
 import {FormsModule} from "@angular/forms";
-import {Routes, RouterModule, RouterOutlet} from "@angular/router";
+import {Routes, RouterModule, RouterOutlet, RouteReuseStrategy} from "@angular/router";
 import { AuthentificationComponent } from './Components/authentification/authentification.component';
 import { HomepageComponent } from './Components/homepage/homepage.component';
 import {MessageService} from "./Services/message.service";
@@ -16,6 +16,7 @@ import {AuthGuard} from "./guards/auth.guard";
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
 import { ChatComponent } from './Components/chat/chat.component';
 import {AuthInterceptor} from "./Interceptor/auth.interceptor";
+import {CustomReuseStrategy} from "../Moduls/custom-reuse-strategy";
 
 
 
@@ -53,6 +54,7 @@ const appRoutes: Routes = [
   providers: [
     MessageService,
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: RouteReuseStrategy, useClass: CustomReuseStrategy }
   ],
   bootstrap: [AppComponent]
 })

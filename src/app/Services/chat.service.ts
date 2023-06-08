@@ -22,7 +22,8 @@ export class ChatService {
 
   // private hubConnection!: HubConnection;
   private hubConnection!: signalR.HubConnection;
-  private chats: { [key: string]: { messages: ChatMessage[], subject: Subject<ChatMessage[]> } } = {};
+  //private chats: { [key: string]: { messages: ChatMessage[], subject: Subject<ChatMessage[]> } } = {};
+  private chats: { [key: string]: { messages: ChatMessage[], subject: Subject<ChatMessage> } } = {};
 
   private apiUrl = 'https://localhost:7185/api/Chat';
 
@@ -42,11 +43,11 @@ export class ChatService {
       };
 
       if (!this.chats[data.from]) {
-        this.chats[data.from] = { messages: [], subject: new Subject<ChatMessage[]>() };
+        this.chats[data.from] = { messages: [], subject: new Subject<ChatMessage>() };
       }
 
       this.chats[data.from].messages.push(message);
-      this.chats[data.from].subject.next(this.chats[data.from].messages);
+      this.chats[data.from].subject.next(message);
     });
 
 
@@ -74,21 +75,21 @@ export class ChatService {
     this.hubConnection.invoke('SendMessage', receiverUsername, message).catch(err => console.error(err));
 
     if (!this.chats[receiverUsername]) {
-      this.chats[receiverUsername] = { messages: [], subject: new Subject<ChatMessage[]>() };
+      this.chats[receiverUsername] = { messages: [], subject: new Subject<ChatMessage>() };
     }
 
     this.chats[receiverUsername].messages.push(myMessage);
-    this.chats[receiverUsername].subject.next(this.chats[receiverUsername].messages);
+    this.chats[receiverUsername].subject.next(myMessage);
   }
 
-  public getChatHistory(username: string): Observable<ChatMessage[]> {
-    if (!this.chats[username]) {
-      this.chats[username] = { messages: [], subject: new Subject<ChatMessage[]>() };
-    }
-
-    // Return a copy of the chat history
-    return of([...this.chats[username].messages]);
-  }
+  // public getChatHistory(username: string): Observable<ChatMessage[]> {
+  //   if (!this.chats[username]) {
+  //     this.chats[username] = { messages: [], subject: new Subject<ChatMessage[]>() };
+  //   }
+  //
+  //   // Return a copy of the chat history
+  //   return of([...this.chats[username].messages]);
+  // }
 
   public getChatHistoryDB(username: string, friend: string, pageIndex: number, pageSize: number): Observable<ChatMessage[]> {
     const params = new HttpParams()
@@ -105,9 +106,9 @@ export class ChatService {
       }))));
   }
 
-  public getChatUpdates(username: string): Subject<ChatMessage[]> {
+  public getChatUpdates(username: string): Subject<ChatMessage> {
     if (!this.chats[username]) {
-      this.chats[username] = { messages: [], subject: new Subject<ChatMessage[]>() };
+      this.chats[username] = { messages: [], subject: new Subject<ChatMessage>() };
     }
 
     // Return the subject that will be updated with new messages

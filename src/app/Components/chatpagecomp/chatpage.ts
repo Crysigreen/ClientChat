@@ -1,11 +1,10 @@
-import {Component, ElementRef, HostListener, OnInit, QueryList, ViewChildren} from "@angular/core";
+import {Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren} from "@angular/core";
 import {MessageService} from "../../Services/message.service";
 import {ActivatedRoute, ParamMap} from "@angular/router";
 import {UserService} from "../../Services/user.service";
 import {Users} from "../../Models/users";
-import {ChatService} from "../../Services/chat.service";
+import {ChatMessage, ChatService} from "../../Services/chat.service";
 import {AuthService} from "../../Services/auth.service";
-import {MessageHistory} from "../../Models/message-history";
 import {Subject, takeUntil} from "rxjs";
 import {ChatHistory} from "../../Models/chat-history";
 
@@ -31,7 +30,7 @@ type Message = {
           </button>
         </div>
       </div>
-      <div class="flex-grow overflow-y-auto px-4 py-2">
+      <div class="flex-grow overflow-y-auto px-4 py-2" #scrollContainer (scroll)="onScroll($event)">
         <div *ngFor="let message of currentChatHistory" [ngClass]="{'flex-row-reverse': message.from === MyName, 'flex-row': message.from !== MyName}" class="flex justify-between" #messageElement>
           <div [class]="'bg-[#3d65ff] px-4 py-2 mb-2 inline-block max-w-xs whitespace-normal break-words ' + (message.from !== MyName ? 'rounded-br-2xl rounded-tr-2xl rounded-tl-2xl' : 'rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl')">
             <div class="text-white">{{ message.content }}</div>
@@ -40,12 +39,14 @@ type Message = {
         </div>
       </div>
     </div>
-  `
+  `,
+  styleUrls: ['./chatpage.component.css']
 
 })
-export class ChatWindowComponent implements OnInit {
+export class ChatWindowComponent implements OnInit, OnDestroy {
   @ViewChildren('messageElement') messageElements!: QueryList<ElementRef>;
-  public currentChatHistory: MessageHistory[] = [];
+  @ViewChild('scrollContainer', { static: true }) private scrollContainer!: ElementRef;
+  public currentChatHistory: ChatMessage[] = [];
   MyName= this.authService.MyUsername;
   userId!: string | null;
   userName!: string | null;
@@ -63,25 +64,17 @@ export class ChatWindowComponent implements OnInit {
     });
     this.route.queryParams.subscribe(params => {
       this.Friend = params['username'];
+      this.pageIndex = 0;
+      this.allMessagesLoaded = false;
+      this.currentChatHistory = [];
 
       this.loadMoreMessages();
       if (this.Friend) {
-        // this.chatService.getChatHistory(this.Friend)
-        //   .pipe(takeUntil(this.onDestroy))
-        //   .subscribe((history) => {
-        //     this.currentChatHistory = history;
-        //
-        //     // After the chat history is loaded, subscribe to new messages
-        //     this.chatService.getChatUpdates(this.Friend)
-        //       .pipe(takeUntil(this.onDestroy))
-        //       .subscribe((newMessages) => {
-        //         this.currentChatHistory = newMessages;
-        //       });
-        //   });
         this.chatService.getChatUpdates(this.Friend)
           .pipe(takeUntil(this.onDestroy))
           .subscribe((newMessages) => {
-            this.currentChatHistory = newMessages;
+            //this.currentChatHistory = [...this.currentChatHistory, ...newMessages];
+            this.currentChatHistory.push(newMessages)
           });
       }
     });
@@ -90,32 +83,46 @@ export class ChatWindowComponent implements OnInit {
       this.scrollToBottom();
     }, 0);
   }
-  @HostListener("window:scroll", ["$event"])
-  onWindowScroll() {
-    let pos = (document.documentElement.scrollTop || document.body.scrollTop) + document.documentElement.offsetHeight;
-    let max = document.documentElement.scrollHeight;
-    // проверяем, достигли ли мы верха
-    if (pos == max ) {
-      // Если достигли, загружаем больше сообщений
+
+
+  onScroll(event: any) {
+    const element = this.scrollContainer.nativeElement;
+    //console.log(element.scrollTop, event);
+    if (element.scrollTop === 0) {
       this.loadMoreMessages();
     }
   }
 
   loadMoreMessages() {
     if (!this.allMessagesLoaded) {
+      const currentScrollPosition = this.scrollContainer.nativeElement.scrollTop;
       this.chatService.getChatHistoryDB(this.MyName, this.Friend, this.pageIndex, this.pageSize)
         .pipe(takeUntil(this.onDestroy))
         .subscribe((history) => {
+          history.reverse();
           // Здесь добавляем новые сообщения в начало массива
           this.currentChatHistory = [...history, ...this.currentChatHistory];
+
+          if (history.length < this.pageSize) {
+            this.allMessagesLoaded = true;
+          }
+          this.pageIndex++;
+
+          setTimeout(() => {
+            // Восстанавливаем позицию прокрутки
+            const messageElement = this.messageElements.toArray()[history.length];
+
+            // Прокручиваем к этому элементу, чтобы остаться на том же месте
+            messageElement.nativeElement.scrollIntoView();
+          },100);
         });
-      this.pageIndex++;
     }
   }
 
   private onDestroy = new Subject<void>();
 
   ngOnDestroy(): void {
+    console.log('ChatWindowComponent is being destroyed');
     this.onDestroy.next();
     this.onDestroy.complete();
   }
