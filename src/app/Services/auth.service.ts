@@ -40,12 +40,13 @@ export class AuthService {
     const params = new HttpParams()
       .set('username', username)
       .set('password', password);
-    return this.http.post<{ token: string }>(`${this.apiUrl}/login`, {}, { params })
-      .pipe(tap(({token}) => {
+    return this.http.post<{ token: string, userId: string }>(`${this.apiUrl}/login`, {}, { params })
+      .pipe(tap(({token, userId}) => {
         this.token = token;
         this.tokenSubject.next(token);
         localStorage.setItem('username', username);
         localStorage.setItem('auth-token', token);
+        localStorage.setItem('user-id', userId.toString());
       }));
   }
 

@@ -1,12 +1,23 @@
-import {Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren} from "@angular/core";
+import {
+  AfterViewInit,
+  Component, ComponentFactoryResolver,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren, ViewContainerRef
+} from "@angular/core";
 import {MessageService} from "../../Services/message.service";
-import {ActivatedRoute, ParamMap} from "@angular/router";
+import {ActivatedRoute, ParamMap, Router} from "@angular/router";
 import {UserService} from "../../Services/user.service";
 import {Users} from "../../Models/users";
 import {ChatMessage, ChatService} from "../../Services/chat.service";
 import {AuthService} from "../../Services/auth.service";
 import {Subject, takeUntil} from "rxjs";
 import {ChatHistory} from "../../Models/chat-history";
+import {VideoCallComponent} from "../video-call/video-call.component";
+import {VideoCallService} from "../../Services/video-call.service";
 
 type Message = {
   content: string;
@@ -22,7 +33,7 @@ type Message = {
       <div class="bg-[#202329] h-20 px-5 py-5 flex justify-between items-center">
         <div class="text-2xl font-bold text-white">{{ userName }}</div>
         <div class="space-x-5">
-          <button class="px-2 py-1 rounded-full">
+          <button class="px-2 py-1 rounded-full" (click)="callFriend()">
             <img src="../../../assets/phone.png" alt="video call" class="w-6 h-6">
           </button>
           <button class="px-2 py-1 rounded-full">
@@ -46,6 +57,7 @@ type Message = {
 export class ChatWindowComponent implements OnInit, OnDestroy {
   @ViewChildren('messageElement') messageElements!: QueryList<ElementRef>;
   @ViewChild('scrollContainer', { static: true }) private scrollContainer!: ElementRef;
+  @ViewChild('videoCallContainer', { read: ViewContainerRef }) videoCallContainer!: ViewContainerRef;
   public currentChatHistory: ChatMessage[] = [];
   MyName= this.authService.MyUsername;
   userId!: string | null;
@@ -54,8 +66,9 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   private pageIndex: number = 0; // Сhat history page number
   private pageSize: number = 20; // Number of uploaded messages
   private allMessagesLoaded: boolean = false; // Flag indicating whether all messages are loaded
+  isCalling = false;
 
-  constructor(private messageService: MessageService, private route: ActivatedRoute, private userService: UserService,private chatService: ChatService, private authService: AuthService) {}
+  constructor(private messageService: MessageService, private route: ActivatedRoute, private userService: UserService,private chatService: ChatService, private authService: AuthService, private videoCallService: VideoCallService,private router: Router) {}
   ngOnInit() {
     // this.chatService.startConnection(this.authService.username);
     this.userId = this.route.snapshot.paramMap.get('userId');
@@ -84,6 +97,20 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     }, 0);
   }
 
+  // ngAfterViewInit() {
+  //   this.videoCallService.myVideo = this.myVideo;
+  //   this.videoCallService.theirVideo = this.theirVideo;
+  // }
+
+  callFriend() {
+    //this.router.navigate(['call']);
+    this.videoCallService.startCall(this.userId!);
+
+  }
+
+  public endCall() {
+    this.isCalling = false;
+  }
 
   onScroll(event: any) {
     const element = this.scrollContainer.nativeElement;

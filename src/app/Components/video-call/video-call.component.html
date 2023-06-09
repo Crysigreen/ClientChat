@@ -1,0 +1,12 @@
+      <div class="flex flex-col h-80 w-full mb-4">
+        <div class="flex w-full h-3/4">
+          <video #myVideo autoplay class="w-1/2 h-full object-cover border-2 border-gray-900 rounded-3xl"></video>
+          <video #theirVideo autoplay class="w-1/2 h-full object-cover border-2 border-gray-900 rounded-3xl"></video>
+        </div>
+        <!-- Кнопка для окончания звонка -->
+        <div class="flex justify-center items-end h-1/4">
+          <button (click)="endCall()" class="bg-red-500 p-4 rounded-full">
+            <img src="../../../assets/End_the_call.png" alt="End_call" class="w-6 h-6">
+          </button>
+        </div>
+      </div>

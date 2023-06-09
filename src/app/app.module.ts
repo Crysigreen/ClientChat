@@ -17,12 +17,14 @@ import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/h
 import { ChatComponent } from './Components/chat/chat.component';
 import {AuthInterceptor} from "./Interceptor/auth.interceptor";
 import {CustomReuseStrategy} from "../Moduls/custom-reuse-strategy";
+import { VideoCallComponent } from './Components/video-call/video-call.component';
 
 
 
 const appRoutes: Routes = [
   {path: '', redirectTo: '/chats', pathMatch: 'full'},
   {path: 'auth', component: AuthentificationComponent},
+  {path: 'call',component: VideoCallComponent, canActivate: [AuthGuard]},
   {path: 'chats',component:HomepageComponent,canActivate: [AuthGuard] ,
     children:[
       { path: ':userId', component: ChatComponent }
@@ -43,6 +45,7 @@ const appRoutes: Routes = [
     HomepageComponent,
     ChatListComponent,
     ChatComponent,
+    VideoCallComponent,
   ],
   imports: [
     HttpClientModule,

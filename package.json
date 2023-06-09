@@ -20,6 +20,7 @@
     "@angular/router": "^15.2.0",
     "@aspnet/signalr": "^1.0.27",
     "@microsoft/signalr": "^7.0.5",
+    "peerjs": "^1.4.7",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.12.0"
